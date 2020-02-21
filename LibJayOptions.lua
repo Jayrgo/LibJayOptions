@@ -306,7 +306,8 @@ do -- Panels
 
             safecall(control.PauseUpdates, control)
 
-            local hidden = getOptionValue(option, "hidden")
+            local hidden = getOptionValue(option, "hidden") or
+                               ((control.parent and not control.parent:IsShown()) or false)
             if hidden and control:IsShown() then
                 control:Hide()
                 safecall(control.ClearFocus, control)
