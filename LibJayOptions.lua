@@ -59,15 +59,11 @@ local frame = lib.frame
 
 frame:Hide()
 
-frame.scrollFrame = frame.scrollFrame or
-                        CreateFrame("ScrollFrame", nil, lib.frame,
-                                    "UIPanelScrollFrameTemplate")
+frame.scrollFrame = frame.scrollFrame or CreateFrame("ScrollFrame", nil, lib.frame, "UIPanelScrollFrameTemplate")
 lib.frame.scrollFrame:SetAllPoints()
 lib.frame.scrollFrame.scrollBarHideable = true
 
-lib.frame.container = lib.frame.container or
-                          CreateFrame("Frame", nil, lib.frame.scrollFrame,
-                                      "VerticalLayoutFrame")
+lib.frame.container = lib.frame.container or CreateFrame("Frame", nil, lib.frame.scrollFrame, "VerticalLayoutFrame")
 lib.frame.container.spacing = 0
 
 lib.frame.scrollFrame:SetScrollChild(lib.frame.container)
@@ -76,9 +72,8 @@ lib.frame.scrollFrame:SetScript("OnSizeChanged", function(self, width, height)
     scrollChild.fixedWidth = width - 10
     scrollChild:MarkDirty()
 end)
-lib.frame.scrollFrame:SetScript("OnUpdate", function(self, elapsed)
-    self.ScrollBar:SetShown(self:GetVerticalScrollRange() ~= 0)
-end)
+lib.frame.scrollFrame:SetScript("OnUpdate",
+                                function(self, elapsed) self.ScrollBar:SetShown(self:GetVerticalScrollRange() ~= 0) end)
 
 local container = lib.frame.container
 
@@ -100,13 +95,10 @@ do -- Controls
     ---@param control table
     ---@return number canUpgrade
     local function canUpgradeControl(control)
-        local name, version, frameType = control._NAME, control._VERSION,
-                                         control._FRAMETYPE
+        local name, version, frameType = control._NAME, control._VERSION, control._FRAMETYPE
 
         if versions[name] == version then return 0 end
-        if versions[name] >= version then
-            if frameTypes[name] == frameType then return 1 end
-        end
+        if versions[name] >= version then if frameTypes[name] == frameType then return 1 end end
         return -1
     end
 
@@ -114,9 +106,7 @@ do -- Controls
     ---@return number success
     local function upgradeControl(control)
         local canUpgrade = canUpgradeControl(control)
-        if canUpgrade == 1 then
-            LJMixin:Mixin(control, mixins[control.name])
-        end
+        if canUpgrade == 1 then LJMixin:Mixin(control, mixins[control.name]) end
         return canUpgrade
     end
 
@@ -126,19 +116,16 @@ do -- Controls
     ---@param frameType string
     function lib:RegisterControl(name, version, frameType)
         if type(name) ~= "string" then
-            error(format(
-                      "Usage: %s:RegisterControl(name, version, frameType): 'name' - string expected got %s",
-                      MAJOR, type(name)), 2)
+            error(format("Usage: %s:RegisterControl(name, version, frameType): 'name' - string expected got %s", MAJOR,
+                         type(name)), 2)
         end
         if type(version) ~= "number" then
-            error(format(
-                      "Usage: %s:RegisterControl(name, version, frameType): 'version' - number expected got %s",
-                      MAJOR, type(version)), 2)
+            error(format("Usage: %s:RegisterControl(name, version, frameType): 'version' - number expected got %s",
+                         MAJOR, type(version)), 2)
         end
         if type(frameType) ~= "string" then
-            error(format(
-                      "Usage: %s:RegisterControl(name, version, frameType): 'frameType' - string expected got %s",
-                      MAJOR, type(frameType)), 2)
+            error(format("Usage: %s:RegisterControl(name, version, frameType): 'frameType' - string expected got %s",
+                         MAJOR, type(frameType)), 2)
         end
 
         local oldVersion = versions[name]
@@ -171,9 +158,7 @@ do -- Controls
 
     ---@param name string
     ---@return boolean isRegistered
-    local function isControlRegistered(name)
-        if mixins[name] then return true end
-    end
+    local function isControlRegistered(name) if mixins[name] then return true end end
 
     ---@param name string
     ---@return table control
@@ -185,8 +170,7 @@ do -- Controls
             if not control then
                 local mixin, frameType = mixins[name], frameTypes[name]
                 if mixin and frameType then
-                    control = LJMixin:CreateFrame(frameType, nil, nil, nil, nil,
-                                                  mixin)
+                    control = LJMixin:CreateFrame(frameType, nil, nil, nil, nil, mixin)
                 end
             end
         elseif type(name) == "table" then
@@ -231,16 +215,13 @@ do -- Panels
     local function fillInfoPath(info, option)
         if option.parent then fillInfoPath(info, option.parent) end
         if type(option.path) == "table" then
-            for i = 1, #option.path do
-                info[#info + 1] = option.path[i]
-            end
+            for i = 1, #option.path do info[#info + 1] = option.path[i] end
         else
             info[#info + 1] = option.path
         end
     end
 
     ---@param option table
-    ---@param path string
     ---@return table info
     local function getInfo(option)
         local info = tnew()
@@ -263,7 +244,6 @@ do -- Panels
     local unpack = unpack
     ---@param option table
     ---@param key string
-    ---@vararg any
     ---@return any
     local function getOptionValue(option, key, ...)
         local value = option[key]
@@ -272,12 +252,9 @@ do -- Panels
             local results = {xsafecall(value, info, ...)}
             tdel(info)
             if results[1] then return unpack(results, 2, #results) end
-        elseif type(value) == "string" and type(option.handler) == "table" and
-            option.handler[value] then
+        elseif type(value) == "string" and type(option.handler) == "table" and option.handler[value] then
             local info = getInfo(option)
-            local results = {
-                xsafecall(option.handler[value], option.handler, info, ...)
-            }
+            local results = {xsafecall(option.handler[value], option.handler, info, ...)}
             tdel(info)
             if results[1] then return unpack(results, 2, #results) end
         end
@@ -286,7 +263,6 @@ do -- Panels
 
     local LJProtectedCall = LibStub("LibJayProtectedCall")
     ---@param option table
-    ---@vararg any
     local function setValue(option, ...)
         if getOptionValue(option, "noCombat") then
             LJProtectedCall:Call(getOptionValue, option, "set", ...)
@@ -320,7 +296,7 @@ do -- Panels
     end
     ---@param controls table
     local function updateControls(controls)
-        local safecall, getOptionValue = safecall, getOptionValue
+        local safecall, getOptionValue = safecall, getOptionValue -- luacheck: ignore 431
 
         local inLockdown = InCombatLockdown()
 
@@ -342,42 +318,28 @@ do -- Panels
 
             local optionType = option.type
             if optionType == "boolean" then
-                safecall(control.SetValue, control,
-                         getOptionValue(option, "get"))
-            elseif optionType == "header" then
+                safecall(control.SetValue, control, getOptionValue(option, "get"))
+            elseif optionType == "header" then -- luacheck: ignore 542
             elseif optionType == "number" then
                 local result, hasFocus = safecall(control.HasFocus, control)
                 if (result and not hasFocus) or not result then
-                    safecall(control.SetValue, control,
-                             getOptionValue(option, "get"))
+                    safecall(control.SetValue, control, getOptionValue(option, "get"))
                 end
-                safecall(control.SetMinMaxValues, control,
-                         getOptionValue(option, "min"),
-                         getOptionValue(option, "max"))
-                safecall(control.SetIsPercent, control,
-                         getOptionValue(option, "isPercent"))
-                safecall(control.SetStep, control,
-                         getOptionValue(option, "step"))
-                safecall(control.SetMinMaxValues, control,
-                         getOptionValue(option, "min"),
-                         getOptionValue(option, "max"))
-                safecall(control.SetMinMaxTexts, control,
-                         getOptionValue(option, "minText"),
+                safecall(control.SetMinMaxValues, control, getOptionValue(option, "min"), getOptionValue(option, "max"))
+                safecall(control.SetIsPercent, control, getOptionValue(option, "isPercent"))
+                safecall(control.SetStep, control, getOptionValue(option, "step"))
+                safecall(control.SetMinMaxValues, control, getOptionValue(option, "min"), getOptionValue(option, "max"))
+                safecall(control.SetMinMaxTexts, control, getOptionValue(option, "minText"),
                          getOptionValue(option, "maxText"))
             elseif optionType == "string" then
                 local result, hasFocus = safecall(control.HasFocus, control)
                 if (result and not hasFocus) or not result then
-                    safecall(control.SetValue, control,
-                             getOptionValue(option, "get"))
+                    safecall(control.SetValue, control, getOptionValue(option, "get"))
                 end
-                safecall(control.SetReadOnly, control,
-                         getOptionValue(option, "isReadOnly"))
-                safecall(control.SetMaxLetters, control,
-                         getOptionValue(option, "maxLetters"))
-                safecall(control.SetJustifyH, control,
-                         getOptionValue(option, "justifyH") or "LEFT")
-                safecall(control.SetMultiLine, control,
-                         getOptionValue(option, "isMultiLine"))
+                safecall(control.SetReadOnly, control, getOptionValue(option, "isReadOnly"))
+                safecall(control.SetMaxLetters, control, getOptionValue(option, "maxLetters"))
+                safecall(control.SetJustifyH, control, getOptionValue(option, "justifyH") or "LEFT")
+                safecall(control.SetMultiLine, control, getOptionValue(option, "isMultiLine"))
             elseif optionType == "select" then
                 safecall(control.SetMultiselect, control, option.isMulti)
                 local result, hasFocus = safecall(control.HasFocus, control)
@@ -386,17 +348,13 @@ do -- Panels
                     safecall(control.SetValues, control, values)
                     if option.isMulti then
                         for k, v in pairs(values) do
-                            safecall(control.SetValue, control, k,
-                                     getOptionValue(option, "get", k))
+                            safecall(control.SetValue, control, k, getOptionValue(option, "get", k))
                         end
                     else
-                        safecall(control.SetValue, control,
-                                 getOptionValue(option, "get"), true)
+                        safecall(control.SetValue, control, getOptionValue(option, "get"), true)
                     end
-                    safecall(control.SetSortByKeys, control,
-                             getOptionValue(option, "sortByKeys"))
-                    safecall(control.SetIcons, control,
-                             getOptionValue(option, "icons"))
+                    safecall(control.SetSortByKeys, control, getOptionValue(option, "sortByKeys"))
+                    safecall(control.SetIcons, control, getOptionValue(option, "icons"))
                 end
             elseif optionType == "color" then
                 local hasAlpha = option.hasAlpha
@@ -411,14 +369,10 @@ do -- Panels
 
             if inLockdown and getOptionValue(option, "noCombat") then
                 safecall(control.SetEnabled, control, false)
-                safecall(control.SetIcon, control, LOCKDOWN_ICON,
-                         LOCKDOWN_ICON_COORDS)
+                safecall(control.SetIcon, control, LOCKDOWN_ICON, LOCKDOWN_ICON_COORDS)
             else
-                safecall(control.SetEnabled, control,
-                         not getOptionValue(option, "disabled"))
-                safecall(control.SetIcon, control,
-                         getOptionValue(option, "icon"),
-                         getOptionValue(option, "iconCoords"))
+                safecall(control.SetEnabled, control, not getOptionValue(option, "disabled"))
+                safecall(control.SetIcon, control, getOptionValue(option, "icon"), getOptionValue(option, "iconCoords"))
             end
 
             safecall(control.ResumeUpdates, control)
@@ -428,10 +382,8 @@ do -- Panels
     end
 
     local wipe = wipe
-
     ---@param control table
     ---@param option table
-    ---@vararg any
     local function Control_OnValueChanged(option, controls, control, ...)
         local values = {...}
         local set = true
@@ -442,9 +394,7 @@ do -- Panels
             local result = {safecall(onSet, info, ...)}
             if result[1] then
                 wipe(values)
-                for i = 2, #result do
-                    values[#values + 1] = result[i]
-                end
+                for i = 2, #result do values[#values + 1] = result[i] end
             else
                 set = false
             end
@@ -461,8 +411,7 @@ do -- Panels
         if set then
             local validate = option.validate
             if type(validate) == "function" then
-                local success, result = safecall(validate, info,
-                                                 unpack(values, 1, #values))
+                local success, result = safecall(validate, info, unpack(values, 1, #values))
                 set = (success and result) and true
             end
         end
@@ -473,15 +422,15 @@ do -- Panels
         updateControls(controls)
 
         if option.type == "select" and option.isMulti then
-            local values = getOptionValue(option, "values")
+            local values = getOptionValue(option, "values") -- luacheck: ignore 421
             safecall(control.SetValues, control, values)
             for k, v in pairs(values) do
-                safecall(control.SetValue, control, k,
-                         getOptionValue(option, "get", k))
+                safecall(control.SetValue, control, k, getOptionValue(option, "get", k))
             end
         end
     end
 
+    local GameTooltip = GameTooltip
     ---@param option table
     ---@param control table
     ---@param motion boolean
@@ -512,23 +461,16 @@ do -- Panels
     end
 
     ---@param control table
-    ---@param motion boolean
-    local function Control_OnHeightChanged(control, height)
-        container:MarkDirty()
-    end
+    local function Control_OnHeightChanged(control, height) container:MarkDirty() end
 
     ---@param option table
-    ---@vararg any
-    local function Control_OnClick(option, ...)
-        getOptionValue(option, "func", ...)
-    end
+    local function Control_OnClick(option, ...) getOptionValue(option, "func", ...) end
 
     ---@param control table
     ---@param option table
     ---@param controls table
     local function Control_RegisterCallbacks(control, option, controls)
-        control:RegisterCallback("OnValueChanged", Control_OnValueChanged,
-                                 option, controls)
+        control:RegisterCallback("OnValueChanged", Control_OnValueChanged, option, controls)
         control:RegisterCallback("OnEnter", Control_OnEnter, option)
         control:RegisterCallback("OnLeave", Control_OnLeave, option)
         control:RegisterCallback("OnHeightChanged", Control_OnHeightChanged)
@@ -550,9 +492,7 @@ do -- Panels
                 local control
 
                 control = option.control
-                if type(control) == "string" then
-                    control = acquireControl(control)
-                end
+                if type(control) == "string" then control = acquireControl(control) end
 
                 if not control then
                     if optionType == "boolean" then
@@ -575,11 +515,9 @@ do -- Panels
                 if control then
                     control.option = option
 
-                    safecall(Control_RegisterCallbacks, control, option,
-                             controls)
+                    safecall(Control_RegisterCallbacks, control, option, controls)
                     if optionType == "function" then
-                        safecall(control.RegisterCallback, control, "OnClick",
-                                 Control_OnClick, option)
+                        safecall(control.RegisterCallback, control, "OnClick", Control_OnClick, option)
                     end
 
                     control.layoutIndex = #controls
@@ -599,11 +537,9 @@ do -- Panels
     ---@param controls table
     local function releaseAllControls(controls)
         if controls then
-            local tremove = tremove
-            local releaseControl = releaseControl
-            for i = #controls, 1, -1 do
-                releaseControl(tremove(controls, i))
-            end
+            local tremove = tremove -- luacheck: ignore 431
+            local releaseControl = releaseControl -- luacheck: ignore 431
+            for i = #controls, 1, -1 do releaseControl(tremove(controls, i)) end
         end
     end
 
@@ -614,8 +550,7 @@ do -- Panels
     local PanelMixin = {}
 
     local CreateFrame = CreateFrame
-    local InterfaceOptionsFrame_OpenToCategory =
-        InterfaceOptionsFrame_OpenToCategory
+    local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategory
     function PanelMixin:OnLoad()
         self.controls = self.controls or {}
 
@@ -636,8 +571,7 @@ do -- Panels
             self.parentButton:SetText(self.parent)
             self.parentButton:ClearAllPoints()
             self.parentButton:SetPoint("TOPLEFT", 16, -16)
-            self.parentButton:SetSize(self.parentButton:GetTextWidth(),
-                                      self.parentButton:GetTextHeight())
+            self.parentButton:SetSize(self.parentButton:GetTextWidth(), self.parentButton:GetTextHeight())
             self.parentButton:SetScript("OnClick", function()
                 InterfaceOptionsFrame_OpenToCategory(self.parent)
             end)
@@ -662,9 +596,7 @@ do -- Panels
                 local info = getInfo(option)
                 safecall(option.onShow, info)
                 tdel(info)
-                if option.optionList then
-                    onShow(option.optionList)
-                end
+                if option.optionList then onShow(option.optionList) end
             end
         end
     end
@@ -694,9 +626,7 @@ do -- Panels
                 local info = getInfo(option)
                 safecall(option.onHide, info)
                 tdel(info)
-                if option.optionList then
-                    onHide(option.optionList)
-                end
+                if option.optionList then onHide(option.optionList) end
             end
         end
     end
@@ -711,19 +641,14 @@ do -- Panels
         for i = 1, (optionList.n or #optionList) do
             local option = optionList[i]
             if option then
-                option.lastUpdate = (option.lastUpdate or
-                                        (option.onUpdateInterval or
-                                            UPDATE_INTERVAL)) + elapsed
-                if option.lastUpdate >=
-                    (option.onUpdateInterval or UPDATE_INTERVAL) then
+                option.lastUpdate = (option.lastUpdate or (option.onUpdateInterval or UPDATE_INTERVAL)) + elapsed
+                if option.lastUpdate >= (option.onUpdateInterval or UPDATE_INTERVAL) then
                     option.lastUpdate = 0
                     local info = getInfo(option)
                     safecall(option.onUpdate, info)
                     tdel(info)
                 end
-                if type(option.optionList) == "table" then
-                    onUpdate(option.optionList, elapsed)
-                end
+                if type(option.optionList) == "table" then onUpdate(option.optionList, elapsed) end
             end
         end
     end
@@ -750,9 +675,7 @@ do -- Panels
                 local info = getInfo(option)
                 safecall(option.onOkay, info)
                 tdel(info)
-                if type(option.optionList) == "table" then
-                    onOkay(option.optionList)
-                end
+                if type(option.optionList) == "table" then onOkay(option.optionList) end
             end
         end
     end
@@ -776,9 +699,7 @@ do -- Panels
                 local info = getInfo(option)
                 safecall(option.onCancel, info)
                 tdel(info)
-                if option.optionList then
-                    onCancel(option.optionList)
-                end
+                if option.optionList then onCancel(option.optionList) end
             end
         end
     end
@@ -787,9 +708,7 @@ do -- Panels
     local function setValues(values)
         for option, value in pairs(values) do
             if option.type == "select" and option.isMulti then
-                for k, v in pairs(value) do
-                    setValue(option, k, v)
-                end
+                for k, v in pairs(value) do setValue(option, k, v) end
             elseif option.type == "color" then
                 if option.hasAlpha then
                     setValue(option, value.r, value.g, value.b, value.a)
@@ -822,9 +741,7 @@ do -- Panels
                 local info = getInfo(option)
                 safecall(option.onDefault, info)
                 tdel(info)
-                if type(option.optionList) == "table" then
-                    onDefault(option.optionList)
-                end
+                if type(option.optionList) == "table" then onDefault(option.optionList) end
             end
         end
     end
@@ -850,9 +767,7 @@ do -- Panels
                 local info = getInfo(option)
                 safecall(option.onRefresh, info)
                 tdel(info)
-                if type(option.optionList) == "table" then
-                    onRefresh(option.optionList)
-                end
+                if type(option.optionList) == "table" then onRefresh(option.optionList) end
             end
         end
     end
@@ -865,17 +780,13 @@ do -- Panels
             local option = optionList[i]
             if option then
                 local newOption = tnew()
-                newOption.handler = option.handler or optionList.handler or
-                                        (parent and parent.handler)
+                newOption.handler = option.handler or optionList.handler or (parent and parent.handler)
                 newOption.parent = parent or optionList
                 for k, v in pairs(option) do
-                    if k ~= "handler" and k ~= "parent" and k ~= "optionList" then
-                        newOption[k] = v
-                    end
+                    if k ~= "handler" and k ~= "parent" and k ~= "optionList" then newOption[k] = v end
                 end
                 if option.optionList then
-                    newOption.optionList =
-                        copyOptionList(option.optionList, newOption)
+                    newOption.optionList = copyOptionList(option.optionList, newOption)
                 end
                 newOptionList[i] = newOption
             end
@@ -899,18 +810,13 @@ do -- Panels
                 end
             elseif option.type == "color" then
                 values[option] = tnew()
-                values[option].r, values[option].g, values[option].b, values[option]
-                    .a = getOptionValue(option, "get")
-                if not option.hasAlpha then
-                    values[option].a = nil
-                end
+                values[option].r, values[option].g, values[option].b, values[option].a = getOptionValue(option, "get")
+                if not option.hasAlpha then values[option].a = nil end
             else
                 values[option] = getOptionValue(option, "get")
             end
 
-            if option.optionList then
-                getValues(option.optionList, values)
-            end
+            if option.optionList then getValues(option.optionList, values) end
         end
 
         return values
@@ -936,6 +842,8 @@ do -- Panels
 
     for i = 1, #panels do LJMixin:Mixin(panels[i], PanelMixin) end -- upgrade
 
+    local InterfaceAddOnsList_Update = InterfaceAddOnsList_Update
+    local InterfaceOptionsFrame = InterfaceOptionsFrame
     local InterfaceOptions_AddCategory = InterfaceOptions_AddCategory
     --[[
     List of option attributes
@@ -1007,31 +915,31 @@ do -- Panels
     ---@param optionList table
     function lib:New(name, parent, optionList)
         if type(name) ~= "string" then
-            error(format(
-                      "Usage: %s:New(name[, parent], optionList): 'name' - string expected got %s",
-                      MAJOR, type(name)), 2)
+            error(
+                format("Usage: %s:New(name[, parent], optionList): 'name' - string expected got %s", MAJOR, type(name)),
+                2)
         end
-        if type(parent) == "table" then optionList, parent = parent end
+        if type(parent) == "table" then optionList, parent = parent, nil end
         if type(parent) ~= "string" and type(parent) ~= "nil" then
-            error(format(
-                      "Usage: %s:New(name[, parent], optionList): 'parent' - string or nil expected got %s",
-                      MAJOR, type(parent)), 2)
+            error(format("Usage: %s:New(name[, parent], optionList): 'parent' - string or nil expected got %s", MAJOR,
+                         type(parent)), 2)
         end
         if type(optionList) ~= "table" then
-            error(format(
-                      "Usage: %s:New(name[, parent], optionList): 'optionList' - table expected got %s",
-                      MAJOR, type(optionList)), 2)
+            error(format("Usage: %s:New(name[, parent], optionList): 'optionList' - table expected got %s", MAJOR,
+                         type(optionList)), 2)
         end
 
-        local panel = LJMixin:Mixin(CreateFrame("Frame"), {
-            name = name,
-            parent = parent,
-            optionList = optionList
-        }, PanelMixin)
+        local panel = LJMixin:Mixin(CreateFrame("Frame"), {name = name, parent = parent, optionList = optionList},
+                                    PanelMixin)
 
         panels[#panels + 1] = panel
 
         InterfaceOptions_AddCategory(panel)
+
+        if InterfaceOptionsFrame:IsShown() then
+            panel:refresh()
+            InterfaceAddOnsList_Update()
+        end
     end
     setmetatable(lib, {__call = lib.New})
 end
@@ -1061,9 +969,7 @@ do -- InterfaceOptionsFrame
     ---@param button string
     local function OnDoubleClick(self, button)
         local toggle = self.toggle
-        if toggle:IsShown() and button == "LeftButton" then
-            OptionsListButtonToggle_OnClick(toggle)
-        end
+        if toggle:IsShown() and button == "LeftButton" then OptionsListButtonToggle_OnClick(toggle) end
     end
 
     for i = 1, 31 do
