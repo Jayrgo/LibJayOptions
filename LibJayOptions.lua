@@ -1,5 +1,5 @@
 local MAJOR = "LibJayOptions"
-local MINOR = 1
+local MINOR = 2
 
 assert(LibStub, format("%s requires LibStub.", MAJOR))
 
