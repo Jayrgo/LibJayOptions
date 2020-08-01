@@ -1,5 +1,4 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl(
-                              "EditBox", 0, "Button")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("EditBox", 0, "Button")
 
 if not mixin then return end
 
@@ -13,9 +12,7 @@ local function round(num) return tonumber(format("%.1f", num)) end
 local function EditBox_UpdateHeight(self)
     local parent = self:GetParent()
     local height = self:GetHeight()
-    if round(parent:GetHeight() - 8) ~= round(height) then
-        parent:SetHeight(height + 8)
-    end
+    if round(parent:GetHeight() - 8) ~= round(height) then parent:SetHeight(height + 8) end
 end
 
 ---@param self table
@@ -33,8 +30,7 @@ end
 local function EditBox_OnTextChanged(self, isUserInput)
     local parent = self:GetParent()
     parent.text:SetText(self:GetText())
-    parent.count:SetFormattedText("%d/%d", self:GetNumLetters(),
-                                  self:GetMaxLetters())
+    parent.count:SetFormattedText("%d/%d", self:GetNumLetters(), self:GetMaxLetters())
     if isUserInput then EditBox_UpdateHeight(self) end
 end
 
@@ -47,9 +43,7 @@ end
 ---@param self table
 ---@param width number
 ---@param height number
-local function EditBox_OnSizeChanged(self, width, height)
-    EditBox_UpdateHeight(self)
-end
+local function EditBox_OnSizeChanged(self, width, height) EditBox_UpdateHeight(self) end
 
 local LJOptions = LibStub("LibJayOptions")
 ---@param self table
@@ -69,24 +63,16 @@ local IsAltKeyDown = IsAltKeyDown
 ---@param self table
 ---@param key string
 local function EditBox_OnKeyDown(self, key)
-    if key == "ENTER" and not IsAltKeyDown() then
-        EditBox_OnEnterPressed(self)
-    end
+    if key == "ENTER" and not IsAltKeyDown() then EditBox_OnEnterPressed(self) end
 end
 
 ---@param self table
 ---@param motion boolean
-local function OnEnter(self, motion)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
-end
+local function OnEnter(self, motion) if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end end
 
 ---@param self table
 ---@param motion boolean
-local function OnLeave(self, motion)
-    self.callbacks:TriggerEvent("OnLeave", self, motion)
-end
+local function OnLeave(self, motion) self.callbacks:TriggerEvent("OnLeave", self, motion) end
 
 ---@param self table
 ---@param width number
@@ -182,7 +168,7 @@ function mixin:OnLoad()
         tileEdge = false,
         tileSize = 16,
         edgeSize = 8,
-        insets = {left = 2, right = 2, top = 2, bottom = 2}
+        insets = {left = 2, right = 2, top = 2, bottom = 2},
     })
     self.editBox:SetBackdropColor(0, 0, 0, 0.5)
     self.editBox:SetBackdropBorderColor(0.5, 0.5, 0.5, 1)
@@ -296,7 +282,5 @@ end
 function mixin:SetMaxLetters(maxLetters)
     maxLetters = maxLetters or 255
     local editBox = self.editBox
-    if editBox:GetMaxLetters() ~= maxLetters then
-        editBox:SetMaxLetters(maxLetters)
-    end
+    if editBox:GetMaxLetters() ~= maxLetters then editBox:SetMaxLetters(maxLetters) end
 end

@@ -1,5 +1,4 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl(
-                              "DropDown", 0, "Button")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("DropDown", 0, "Button")
 
 if not mixin then return end
 
@@ -17,8 +16,7 @@ local tsort = table.sort
 local function getSortedValues(values)
     local sortedList = {}
     for key in pairs(values) do sortedList[#sortedList + 1] = key end
-    tsort(sortedList,
-          function(a, b) return tostring(values[a]) < tostring(values[b]) end)
+    tsort(sortedList, function(a, b) return tostring(values[a]) < tostring(values[b]) end)
     return sortedList
 end
 
@@ -58,9 +56,7 @@ end
 ---@param motion boolean
 local function OnEnter(self, motion)
     UpdateFont(self)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
+    if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end
 end
 
 ---@param self table
@@ -70,8 +66,7 @@ local function OnLeave(self, motion)
     self.callbacks:TriggerEvent("OnLeave", self, motion)
 end
 
-local SOUND_IG_MAINMENU_OPTION_CHECKBOX_ON =
-    SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
+local SOUND_IG_MAINMENU_OPTION_CHECKBOX_ON = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
 local PlaySound = PlaySound
 local LJOptions = LibStub("LibJayOptions")
 local LJDropDownMenu = LibStub("LibJayDropDownMenu")
@@ -94,22 +89,18 @@ local function OnClick(self, button, down)
         local selectedValues = self.selectedValues
         local checked = function(info, arg) return selectedValues[arg] end
 
-        local func = function(info, arg, checked)
+        local func = function(info, arg, checked) -- luacheck: ignore 431
             self:SetValue(arg, checked)
             self.callbacks:TriggerEvent("OnValueChanged", self, arg, checked)
         end
 
         local icons = self.icons
-        local function getIcon(info, arg)
-            if icons then return icons[arg] end
-        end
+        local function getIcon(info, arg) if icons then return icons[arg] end end
 
         local sortedValues
         if self.sortByKeys then
             sortedValues = {}
-            for k in pairs(values) do
-                sortedValues[#sortedValues + 1] = k
-            end
+            for k in pairs(values) do sortedValues[#sortedValues + 1] = k end
             tsort(sortedValues)
         else
             sortedValues = getSortedValues(values)
@@ -124,7 +115,7 @@ local function OnClick(self, button, down)
                 func = func,
                 isNotRadio = self:IsMultiselect(),
                 keepShownOnClick = self:IsMultiselect(),
-                icon = getIcon
+                icon = getIcon,
             }
         end
 
@@ -199,8 +190,7 @@ function mixin:OnLoad()
     disabledTexture:ClearAllPoints()
     disabledTexture:SetPoint("TOPRIGHT")
     disabledTexture:SetSize(26, 26)
-    disabledTexture:SetTexture(
-        [[Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled]])
+    disabledTexture:SetTexture([[Interface\ChatFrame\UI-ChatIcon-ScrollDown-Disabled]])
     disabledTexture:SetDrawLayer("BACKGROUND")
     self:SetDisabledTexture(disabledTexture)
 
@@ -353,9 +343,7 @@ function mixin:SetValue(value, selected)
         TextHover_SetEnabled(self, false)
         return
     end
-    if not self:IsMultiselect() then
-        for k, v in pairs(selectedValues) do selectedValues[k] = nil end
-    end
+    if not self:IsMultiselect() then for k, v in pairs(selectedValues) do selectedValues[k] = nil end end -- luacheck: ignore 213
     selectedValues[value] = selected
 
     Update(self)
@@ -366,13 +354,9 @@ function mixin:UpdateDisplayText() end
 ---@return any value
 function mixin:GetValue() return self.value end
 
-function mixin:HasFocus()
-    return LJDropDownMenu:IsOpen() and LJDropDownMenu:IsOwned(self)
-end
+function mixin:HasFocus() return LJDropDownMenu:IsOpen() and LJDropDownMenu:IsOwned(self) end
 
-function mixin:ClearFocus()
-    if LJDropDownMenu:IsOwned(self) then LJDropDownMenu:Close() end
-end
+function mixin:ClearFocus() if LJDropDownMenu:IsOwned(self) then LJDropDownMenu:Close() end end
 
 ---@param state boolean
 function mixin:SetMultiselect(state) self.isMultiselect = state end

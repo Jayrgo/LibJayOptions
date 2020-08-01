@@ -1,6 +1,4 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("Slider",
-                                                                       0,
-                                                                       "Button")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("Slider", 0, "Button")
 
 if not mixin then return end
 
@@ -35,12 +33,10 @@ local function UpdateText(self)
     else
         if parent.isPercent then
             local places = select(2, strsplit(".", parent.step * 100))
-            text:SetFormattedText("%." .. (places and strlen(places) or 0) ..
-                                      "f %%", value * 100)
+            text:SetFormattedText("%." .. (places and strlen(places) or 0) .. "f %%", value * 100)
         else
             local places = select(2, strsplit(".", parent.step))
-            text:SetFormattedText("%." .. (places and strlen(places) or 0) ..
-                                      "f", value)
+            text:SetFormattedText("%." .. (places and strlen(places) or 0) .. "f", value)
         end
     end
     self:SetHitRectInsets(-text:GetStringWidth(), 0, 0, 0)
@@ -60,40 +56,28 @@ end
 ---@param self table
 ---@param min number
 ---@param max number
-local function Slider_OnMinMaxChanged(self, min, max)
-    Slider_OnValueChanged(self, self:GetValue(), false)
-end
+local function Slider_OnMinMaxChanged(self, min, max) Slider_OnValueChanged(self, self:GetValue(), false) end
 
 ---@param self table
 ---@param delta number
 local function Slider_OnMouseWheel(self, delta)
     local parent = self:GetParent()
-    if parent:IsEnabled() then
-        self:SetValue(self:GetValue() + (delta * parent.step), true)
-    end
+    if parent:IsEnabled() then self:SetValue(self:GetValue() + (delta * parent.step), true) end
 end
 
 ---@param self table
 ---@param button string
 local function Slider_OnMouseDown(self, button)
-    if self:GetParent():IsEnabled() then
-        Slider_OnValueChanged(self, self:GetValue(), true)
-    end
+    if self:GetParent():IsEnabled() then Slider_OnValueChanged(self, self:GetValue(), true) end
 end
 
 ---@param self table
 ---@param motion boolean
-local function OnEnter(self, motion)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
-end
+local function OnEnter(self, motion) if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end end
 
 ---@param self table
 ---@param motion boolean
-local function OnLeave(self, motion)
-    self.callbacks:TriggerEvent("OnLeave", self, motion)
-end
+local function OnLeave(self, motion) self.callbacks:TriggerEvent("OnLeave", self, motion) end
 
 ---@param self table
 ---@param motion boolean
@@ -173,12 +157,11 @@ function mixin:OnLoad()
         tile = true,
         edgeSize = 8,
         tileSize = 8,
-        insets = {left = 3, right = 3, top = 6, bottom = 6}
+        insets = {left = 3, right = 3, top = 6, bottom = 6},
     })
     self.slider:SetObeyStepOnDrag(true)
 
-    self.slider:SetThumbTexture(
-        [[Interface\Buttons\UI-SliderBar-Button-Horizontal]])
+    self.slider:SetThumbTexture([[Interface\Buttons\UI-SliderBar-Button-Horizontal]])
     self.slider:SetHeight(18)
 
     self.slider:SetScript("OnValueChanged", Slider_OnValueChanged)

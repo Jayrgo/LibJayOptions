@@ -1,26 +1,17 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl(
-                              "CheckButton", 0, "CheckButton")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("CheckButton", 0, "CheckButton")
 
 if not mixin then return end
 
 ---@param self table
 ---@param motion boolean
-local function OnEnter(self, motion)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
-end
+local function OnEnter(self, motion) if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end end
 
 ---@param self table
 ---@param motion boolean
-local function OnLeave(self, motion)
-    self.callbacks:TriggerEvent("OnLeave", self, motion)
-end
+local function OnLeave(self, motion) self.callbacks:TriggerEvent("OnLeave", self, motion) end
 
-local SOUND_IG_MAINMENU_OPTION_CHECKBOX_ON =
-    SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
-local SOUND_IG_MAINMENU_OPTION_CHECKBOX_OFF =
-    SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF
+local SOUND_IG_MAINMENU_OPTION_CHECKBOX_ON = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON
+local SOUND_IG_MAINMENU_OPTION_CHECKBOX_OFF = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF
 local PlaySound = PlaySound
 local LJOptions = LibStub("LibJayOptions")
 ---@param self table
@@ -96,8 +87,7 @@ function mixin:OnLoad()
     checkedTexture:SetDrawLayer("BACKGROUND")
     self:SetCheckedTexture(checkedTexture)
 
-    local disabledTexture = self:GetDisabledCheckedTexture() or
-                                self:CreateTexture()
+    local disabledTexture = self:GetDisabledCheckedTexture() or self:CreateTexture()
     disabledTexture:ClearAllPoints()
     disabledTexture:SetPoint("TOPRIGHT")
     disabledTexture:SetSize(26, 26)
@@ -119,9 +109,7 @@ end
 function mixin:OnRelease() self.callbacks:Wipe() end
 
 ---@param value boolean
-function mixin:SetValue(value)
-    if value ~= self:GetChecked() then self:SetChecked(value) end
-end
+function mixin:SetValue(value) if value ~= self:GetChecked() then self:SetChecked(value) end end
 
 ---@return boolean value
 function mixin:GetValue() return self:GetChecked() end

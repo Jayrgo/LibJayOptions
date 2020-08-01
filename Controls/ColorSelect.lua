@@ -1,5 +1,4 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl(
-                              "ColorSelect", 0, "Button")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("ColorSelect", 0, "Button")
 
 if not mixin then return end
 
@@ -23,18 +22,14 @@ end
 ---@param motion boolean
 local function OnEnter(self, motion)
     UpdateBorder(self)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
+    if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end
 end
 
 ---@param self table
 ---@param motion boolean
 local function OnLeave(self, motion)
     UpdateBorder(self)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnLeave", self, motion)
-    end
+    if self:IsEnabled() then self.callbacks:TriggerEvent("OnLeave", self, motion) end
 end
 
 local ColorPickerFrame = ColorPickerFrame
@@ -54,9 +49,7 @@ local function OnClick(self, button, down)
             r, g, b = ColorPickerFrame:GetColorRGB()
         end
         if hasAlpha then
-            self.callbacks:TriggerEvent("OnValueChanged", self, r, g, b,
-                                        a and a or
-                                            (1 - OpacitySliderFrame:GetValue()))
+            self.callbacks:TriggerEvent("OnValueChanged", self, r, g, b, a and a or (1 - OpacitySliderFrame:GetValue()))
         else
             self.callbacks:TriggerEvent("OnValueChanged", self, r, g, b)
         end
@@ -69,9 +62,7 @@ local function OnClick(self, button, down)
     ColorPickerFrame.opacity = hasAlpha and 1 - self.a or 0
     ColorPickerFrame.opacityFunc = callback
     ColorPickerFrame.cancelFunc = callback
-    ColorPickerFrame.previousValues = {
-        self.r, self.g, self.b, hasAlpha and self.a
-    }
+    ColorPickerFrame.previousValues = {self.r, self.g, self.b, hasAlpha and self.a}
 
     ColorPickerFrame:Hide()
     ColorPickerFrame:Show()

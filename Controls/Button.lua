@@ -1,22 +1,14 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("Button",
-                                                                       0,
-                                                                       "Button")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("Button", 0, "Button")
 
 if not mixin then return end
 
 ---@param self table
 ---@param motion boolean
-local function OnEnter(self, motion)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
-end
+local function OnEnter(self, motion) if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end end
 
 ---@param self table
 ---@param motion boolean
-local function OnLeave(self, motion)
-    self.callbacks:TriggerEvent("OnLeave", self, motion)
-end
+local function OnLeave(self, motion) self.callbacks:TriggerEvent("OnLeave", self, motion) end
 
 ---@param self table
 ---@param button string
@@ -35,12 +27,9 @@ local function UpdateTextures(self)
         self.middleTexture:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
         self.rightTexture:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
     else
-        self.leftTexture:SetTexture(
-            [[Interface\Buttons\UI-Panel-Button-Disabled]])
-        self.middleTexture:SetTexture(
-            [[Interface\Buttons\UI-Panel-Button-Disabled]])
-        self.rightTexture:SetTexture(
-            [[Interface\Buttons\UI-Panel-Button-Disabled]])
+        self.leftTexture:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
+        self.middleTexture:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
+        self.rightTexture:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
     end
 end
 

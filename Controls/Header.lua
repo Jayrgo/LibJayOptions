@@ -1,22 +1,14 @@
-local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("Header",
-                                                                       0,
-                                                                       "Button")
+local mixin, oldVersion = LibStub("LibJayOptions"):RegisterControl("Header", 0, "Button")
 
 if not mixin then return end
 
 ---@param self table
 ---@param motion boolean
-local function OnEnter(self, motion)
-    if self:IsEnabled() then
-        self.callbacks:TriggerEvent("OnEnter", self, motion)
-    end
-end
+local function OnEnter(self, motion) if self:IsEnabled() then self.callbacks:TriggerEvent("OnEnter", self, motion) end end
 
 ---@param self table
 ---@param motion boolean
-local function OnLeave(self, motion)
-    self.callbacks:TriggerEvent("OnLeave", self, motion)
-end
+local function OnLeave(self, motion) self.callbacks:TriggerEvent("OnLeave", self, motion) end
 
 local LJCallback = LibStub("LibJayCallback")
 function mixin:OnLoad()

@@ -277,7 +277,7 @@ do -- Panels
             local option = optionList[i]
 
             if option.type == "select" and option.isMulti then
-                for k, v in pairs(getOptionValue(option, "values") or tnew()) do
+                for k, v in pairs(getOptionValue(option, "values") or tnew()) do -- luacheck: ignore 213
                     setValue(option, k, getOptionValue(option, "default", k))
                 end
             elseif option.type == "color" then
@@ -348,7 +348,7 @@ do -- Panels
                     local values = getOptionValue(option, "values")
                     safecall(control.SetValues, control, values)
                     if option.isMulti then
-                        for k, v in pairs(values) do
+                        for k, v in pairs(values) do -- luacheck: ignore 213
                             safecall(control.SetValue, control, k, getOptionValue(option, "get", k))
                         end
                     else
@@ -425,7 +425,7 @@ do -- Panels
         if option.type == "select" and option.isMulti then
             local values = getOptionValue(option, "values") -- luacheck: ignore 421
             safecall(control.SetValues, control, values)
-            for k, v in pairs(values) do
+            for k, v in pairs(values) do -- luacheck: ignore 213
                 safecall(control.SetValue, control, k, getOptionValue(option, "get", k))
             end
         end
@@ -806,7 +806,7 @@ do -- Panels
 
             if option.type == "select" and option.isMulti then
                 values[option] = tnew()
-                for k, v in pairs(getOptionValue(option, "values") or tnew()) do
+                for k, v in pairs(getOptionValue(option, "values") or tnew()) do -- luacheck: ignore 213
                     values[option][k] = getOptionValue(option, "get", k)
                 end
             elseif option.type == "color" then
