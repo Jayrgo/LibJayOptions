@@ -8,7 +8,17 @@ ignore = {
 }
 globals = {}
 read_globals = {
-    "ColorPickerFrame", --
+    ColorPickerFrame = {
+        fields = {
+            cancelFunc = {read_only = false},
+            func = {read_only = false},
+            hasOpacity = {read_only = false},
+            opacity = {read_only = false},
+            opacityFunc = {read_only = false},
+            previousValues = {read_only = false},
+        },
+        other_fields = true,
+    },
     "CreateFrame", --
     "DISABLED_FONT_COLOR", --
     "GameTooltip", --
